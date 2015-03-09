@@ -3,6 +3,16 @@
 <title>Postapo</title>
 <style>
 
+#col{
+float:right;
+width:max-content;
+width:moz-max-content;
+width:webkit-max-content;
+}
+table{
+max-width:100%;
+overflow:scroll;
+}
 td,div{
 position:relative;
 border:5px solid gray;
@@ -27,8 +37,8 @@ line-height:16px;
 }
 span:empty{display:none;}
 div,p{
-position:fixed;
-top:10px;right:10px;
+float:right;
+clear:right;
 }
 p{
 top:100px;
@@ -114,7 +124,9 @@ u=undefined,
 
 v,w,
 x,y,z, //temp. vars
+col, //left&right column
 aa, //active tile
+cc, //controls panel
 dd, //visible data
 
 btp, rlt,
@@ -224,7 +236,7 @@ rt=()=>rlt(1);
 lt=()=>rlt(0);
 
 t=function(){
- d.a++;d.a==3&&d.s++;
+ d.a++;d.a==2&&d.s++;
  
  var x=dd[d.p];
  
@@ -239,6 +251,10 @@ t=function(){
 
 b.oncontextmenu=p;
 
+col=E("section");
+col.id="col";
+b.ac(col);
+
 x=E("table");
 b.ac(x);
 a=x;
@@ -246,11 +262,11 @@ a=x;
 i=-1;
 while(++i<128)
 s.push({0:m(3),1:m(3),2:m(3),3:m(3),z:m(3)});
-
 c=s[0];
 c.n=0;
+
 aa=E("div");
-b.ac(aa);
+col.ac(aa);
 aa.u=function(){
  var i=-1;
  while(++i<4)
@@ -262,12 +278,17 @@ aa.textContent=1;
 aa.onclick=r;
 aa.u();
 
+cc=E("p");
+cc.innerHTML="<button id=bb>Build</button><button id=bm>Move"+
+"</button><button id=be>End turn</button>";
+col.ac(cc);
+
 dd=E("p");
 dd.innerHTML="<h3 class=p1>Player 1</h3>Population: <output id=p1></output><br>"+
 "Food: <output id=f1></output><br>Junk: <output id=j1></output>"+
 "<h3 class=p2>Player 2</h3>Population: <output id=p2></output><br>"+
 "Food: <output id=f2></output><br>Junk: <output id=j2></output>";
-b.ac(dd);
+col.ac(dd);
 
 x=function(){
  var i=0,j,x=["p","f","j"],l=3,y;
