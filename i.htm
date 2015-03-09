@@ -72,7 +72,9 @@ n=(a,i)=>a.splice(i,1)[0], //pop i-th element from array a
 o, /* click listener,
 Listener for the click event of td elements */
 
-p,q, //f.tions
+p=(e)=>e.preventDefault()+r()&&false, //right-click listener
+
+q,
 
 r =()=>([c[0],c[1],c[2],c[3]]=[c[3],c[0],c[1],c[2]],aa.u()),
 /* rotate tile,
@@ -200,12 +202,14 @@ t=function(){
  var x=dd[d.p];
  x.f-=x.p;
  (x.f<0)&&((x.p+=x.f),x.f=0);
- (x.p<1)&&alert("Player "+d.p+" lost");
+ (x.p<1)&&(alert("Player "+d.p+" lost"));
  d.p==1?d.p=2:d.p=1;
  aa.textContent=d.p;
  dd.u();
 };
 
+
+b.oncontextmenu=p;
 
 x=E("table");
 b.ac(x);
