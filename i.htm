@@ -86,8 +86,9 @@ c={n:0}, /* active tile,
 Random tile from the tile stack, extended
 by {n: int}, where int is the index of the tile */
 
-d={a:0, p:1,s:0}, /* game data
+d={a:0, m:0, p:1,s:0}, /* game data
 a – step counter, no. of t() calls
+m – mode 0=place tile, 1=wait, 2=move, 3=build
 p – which player's turn it is
 s – "stage" or "phase" of the game,
     0=init, 1=rise, 2=stall, 3=fall */
@@ -149,6 +150,16 @@ o=function(e){
  var i=-1,x,y=0,
  t=e.target;
  
+ if(d.m==1){
+  return;
+ }
+ if(d.m==2){
+  return;
+ }
+ if(d.m==3){
+  return;
+ }
+ 
  if(x=(a[t.x-1]||{})[t.y]){
   if(x){if(x[2]!=u && x[2]!=c[0])return;x[1]!=u?y=1:0;}
  }
@@ -176,12 +187,6 @@ o=function(e){
  
  (d.s==0)&&(t.p.className="p"+d.p)&&(t.p.textContent=dd[d.p].p);
  
- n(s,c.n);
- x=m(s.length);
- c=s[x];
- c.n=x;
- 
- aa.u();
  g.t();
 };
 
@@ -238,7 +243,20 @@ lt=()=>rlt(0);
 t=function(){
  d.a++;d.a==2&&d.s++;
  
+ d.m=d.m==0?1:0;
+ 
+ if(d.m==1){
+  c={};aa.u();
+  return;
+ }
+ 
  var x=dd[d.p];
+ 
+ n(s,c.n);
+ x=m(s.length);
+ c=s[x];
+ c.n=x;
+ aa.u();
  
  x.f-=x.p;
  (x.f<0)&&((x.p+=x.f),x.f=0);
@@ -282,6 +300,9 @@ cc=E("p");
 cc.innerHTML="<button id=bb>Build</button><button id=bm>Move"+
 "</button><button id=be>End turn</button>";
 col.ac(cc);
+I("be").onclick=t;
+I("bm").onclick=()=>d.m=2;
+I("bb").onclick=()=>d.m=3;
 
 dd=E("p");
 dd.innerHTML="<h3 class=p1>Player 1</h3>Population: <output id=p1></output><br>"+
