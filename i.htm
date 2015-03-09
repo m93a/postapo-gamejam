@@ -4,14 +4,28 @@
 <style>
 
 td,div{
+position:relative;
 border:5px solid gray;
-font-size:3em;
+font-size:3rem;
 color: #ccc;
 width:64px;
 height:64px;
 line-height:64px;
 text-align:center;
 }
+span{
+font-size:.8rem;
+font-family:sans-serif;
+font-weight:bold;
+position:absolute;
+top:0;left:0;
+background:white;
+border-radius:50%;
+width:16px;
+height:16px;
+line-height:16px;
+}
+span:empty{display:none;}
 div,p{
 position:fixed;
 top:10px;right:10px;
@@ -23,6 +37,9 @@ border:1px solid;
 h3{
 margin:0;
 }
+
+.p1{color:blue;}
+.p2{color:green;}
 
 [x='0']{background:black;}
 [x='1']{background:yellow;}
@@ -50,7 +67,8 @@ Table element extended by { ...-1: trElem,
 <tr> elements extended by { ...-1: tdElem,
 0: tdElem, 1: tdElem... }, where tdElem are
 <td> elements extended by the corresponding
-item of the tile stack */
+item of the tile stack and {p: spanElem }
+which shows no. of people on the tile */
 
 b=document.body,
 
@@ -58,8 +76,11 @@ c={n:0}, /* active tile,
 Random tile from the tile stack, extended
 by {n: int}, where int is the index of the tile */
 
-d={p:1}, /* game data
-p – which player's turn it is */
+d={a:0, p:1,s:0}, /* game data
+a – step counter, no. of t() calls
+p – which player's turn it is
+s – "stage" or "phase" of the game,
+    0=init, 1=rise, 2=stall, 3=fall */
 
 e,f,
 
@@ -141,6 +162,8 @@ o=function(e){
  a[t.x][t.y-1]||lt();
  a[t.x][t.y+1]||rt();
  
+ (d.s==0)&&(t.p.className="p"+d.p)&&(t.p.textContent=dd[d.p].p);
+ 
  n(s,c.n);
  x=m(s.length);
  c=s[x];
@@ -170,6 +193,7 @@ btp=function(t){
   x.x=i;x.y=mn;
   a[i].ac(x);
   x.onclick=o;
+  x.ac(x.p=E("span"));
  }
 };
 
@@ -190,6 +214,7 @@ rlt=function(r){
   x.x=mn;x.y=j;
   r?a[mn].ac(x):a[mn].bc(x);
   x.onclick=o;
+  x.ac(x.p=E("span"));
  }
 };
 
@@ -199,7 +224,10 @@ rt=()=>rlt(1);
 lt=()=>rlt(0);
 
 t=function(){
+ d.a++;d.a==3&&d.s++;
+ 
  var x=dd[d.p];
+ 
  x.f-=x.p;
  (x.f<0)&&((x.p+=x.f),x.f=0);
  (x.p<1)&&(alert("Player "+d.p+" lost"));
@@ -235,9 +263,9 @@ aa.onclick=r;
 aa.u();
 
 dd=E("p");
-dd.innerHTML="<h3>Player 1</h3>Population: <output id=p1></output><br>"+
+dd.innerHTML="<h3 class=p1>Player 1</h3>Population: <output id=p1></output><br>"+
 "Food: <output id=f1></output><br>Junk: <output id=j1></output>"+
-"<h3>Player 2</h3>Population: <output id=p2></output><br>"+
+"<h3 class=p2>Player 2</h3>Population: <output id=p2></output><br>"+
 "Food: <output id=f2></output><br>Junk: <output id=j2></output>";
 b.ac(dd);
 
@@ -264,5 +292,6 @@ x.x=0;x.y=0;
 a[0].ac(x);
 x.onclick=o;
 x.prim=1;
+x.ac(x.p=E("span"));
 
 </script>
