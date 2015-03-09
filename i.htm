@@ -4,7 +4,7 @@
 <style>
 
 td,div{
-border:5px solid;
+border:5px solid gray;
 width:64px;
 height:64px;
 }
@@ -12,12 +12,16 @@ div{
 position:fixed;
 top:10px;right:10px;
 }
+[x0='0']{border-top-color: black;}
 [x0='1']{border-top-color: yellow;}
 [x0='2']{border-top-color: red;}
+[x1='0']{border-right-color: black;}
 [x1='1']{border-right-color: yellow;}
 [x1='2']{border-right-color: red;}
+[x2='0']{border-bottom-color: black;}
 [x2='1']{border-bottom-color: yellow;}
 [x2='2']{border-bottom-color: red;}
+[x3='0']{border-left-color: black;}
 [x3='1']{border-left-color: yellow;}
 [x3='2']{border-left-color: red;}
 
@@ -41,11 +45,12 @@ t,u,v,
 w=window,
 x,y,z, //temp. vars
 aa, //active tile
+btp, rlt, tp, rt, lt, bt,
 E=(x)=>document.createElement(x);
 
 x=Element.prototype;
 x.ac=x.appendChild;
-x.bc=(x)=>this.insertBefore(x,this.children[0]);
+x.bc=function(x){return this.insertBefore(x,this.children[0])};
 x.sa=x.setAttribute;
 x.ga=x.getAttribute;
 
@@ -57,6 +62,11 @@ o=function(e){
  t.sa("x"+i,c[i]),
  t[i]=c[i];
  
+ a[t.x-1]||tp();
+ a[t.x+1]||bt();
+ a[t.x][t.y-1]||lt();
+ a[t.x][t.y+1]||rt();
+ 
  n(s,c.n);
  x=m(s.length);
  c=s[x];
@@ -67,6 +77,54 @@ o=function(e){
  aa.sa("x"+i,c[i]),
  aa[i]=c[i];
 };
+
+btp=function(t){
+ var i=0,j,x,mn=0,mx=1;
+ if(t){
+  while(a[--i]);
+  a[i]=E("tr");
+  a.bc(a[i]);
+ }else{
+  while(a[++i]);
+  a[i]=E("tr");
+  a.ac(a[i]);
+ }
+ 
+ while(a[0][++mx]);
+ while(a[0][--mn]);
+ 
+ while(mn++<mx-1){
+  x=a[i][mn]=E("td");
+  x.x=i;x.y=mn;
+  a[i].ac(x);
+  x.onclick=o;
+ }
+};
+
+rlt=function(r){
+ var i=0,j,x,mn=0,mx=1;
+ 
+ while(a[++mx]);
+ while(a[--mn]);
+ 
+ if(r){
+  j=0;while(a[0][++j]);
+ }else{
+  j=1;while(a[0][--j]);
+ }
+ 
+ while(mn++<mx-1){
+  x=a[mn][j]=E("td");
+  x.x=mn;x.y=j;
+  r?a[mn].ac(x):a[mn].bc(x);
+  x.onclick=o;
+ }
+};
+
+tp=()=>btp(1);
+bt=()=>btp(0);
+rt=()=>rlt(1);
+lt=()=>rlt(0);
 
 
 x=E("table");
@@ -93,6 +151,7 @@ while(j=-1,++i<2) while(++j<2){
   a.ac(a[i]);
  }
  x=a[i][j]=E("td");
+ x.x=i;x.y=j;
  a[i].ac(x);
  x.onclick=o;
 }
