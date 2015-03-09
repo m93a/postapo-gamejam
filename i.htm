@@ -3,10 +3,14 @@
 <title>Postapo</title>
 <style>
 
-td{
+td,div{
 border:5px solid;
 width:64px;
 height:64px;
+}
+div{
+position:fixed;
+top:10px;right:10px;
 }
 [x0='1']{border-top-color: yellow;}
 [x0='2']{border-top-color: red;}
@@ -36,6 +40,7 @@ s=[], //stack
 t,u,v,
 w=window,
 x,y,z, //temp. vars
+aa, //active tile
 E=(x)=>document.createElement(x);
 
 x=Element.prototype;
@@ -45,7 +50,8 @@ x.sa=x.setAttribute;
 x.ga=x.getAttribute;
 
 o=function(e){
- var i=-1,t=e.target,x;
+ var i=-1,x,
+ t=e.target;
  
  while(++i<4)
  t.sa("x"+i,c[i]),
@@ -55,6 +61,11 @@ o=function(e){
  x=m(s.length);
  c=s[x];
  c.n=x;
+ 
+ i=-1;
+ while(++i<4)
+ aa.sa("x"+i,c[i]),
+ aa[i]=c[i];
 };
 
 
@@ -68,6 +79,12 @@ s.push({0:m(3),1:m(3),2:m(3),3:m(3)});
 
 c=s[0];
 c.n=0;
+aa=E("div");
+b.ac(aa);
+i=-1;
+while(++i<4)
+aa.sa("x"+i,c[i]),
+aa[i]=c[i];
 
 i=-1;
 while(j=-1,++i<2) while(++j<2){
