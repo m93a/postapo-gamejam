@@ -5,8 +5,11 @@
 
 td,div{
 border:5px solid gray;
+font-size:3em;
 width:64px;
 height:64px;
+line-height:64px;
+text-align:center;
 }
 div{
 position:fixed;
@@ -43,17 +46,26 @@ c={n:0}, /* active tile,
 Random tile from the tile stack, extended
 by {n: int}, where int is the index of the tile */
 
-d,e,f, //glob. vars
+d={p:1}, /* game data
+p – which player's turn it is */
+
+e,f,
+
 g=window,
 h,i,j,k, //iterators
 l=console.log.bind(console),
 m=(x)=>x*Math.random()|0, //random int from 0 to x
-n=(a,i)=>a.splice(i,i)[0], //pop i-th element from array a
+n=(a,i)=>a.splice(i,1)[0], //pop i-th element from array a
 
-o,/* click listener,
+o, /* click listener,
 Listener for the click event of td elements */
 
-p,q,r, //f.tions
+p,q, //f.tions
+
+r =()=>([c[0],c[1],c[2],c[3]]=[c[3],c[0],c[1],c[2]],aa.u()),
+/* rotate tile,
+Listener for the click event of the tile hinter,
+rotates the active tile */
 
 s=[], /* tile stack,
 Contains objects with properties 0 to 3
@@ -61,14 +73,15 @@ for tile sides top, right, bottom, left.
 Values of those are numbers 0 to 2
 corresponding to the three zone types */
 
-t,
+t, //next turn
+
 u=undefined,
-v,
-w=window,
+
+v,w,
 x,y,z, //temp. vars
 aa, //active tile
-btp, rlt,
 
+btp, rlt,
 tp, rt, lt, bt, /* extend the plane,
 tp = Add a row to the top,
 bt = Add a row to the bottom,
@@ -84,7 +97,7 @@ x.sa=x.setAttribute;
 x.ga=x.getAttribute;
 
 o=function(e){
- var i=-1,x,y=0
+ var i=-1,x,y=0,
  t=e.target;
  
  if(x=(a[t.x-1]||{})[t.y]){
@@ -116,10 +129,8 @@ o=function(e){
  c=s[x];
  c.n=x;
  
- i=-1;
- while(++i<4)
- aa.sa("x"+i,c[i]),
- aa[i]=c[i];
+ aa.u();
+ g.t();
 };
 
 btp=function(t){
@@ -170,6 +181,11 @@ bt=()=>btp(0);
 rt=()=>rlt(1);
 lt=()=>rlt(0);
 
+t=function(){
+ d.p==1?d.p=2:d.p=1;
+ aa.textContent=d.p;
+};
+
 
 x=E("table");
 b.ac(x);
@@ -183,10 +199,15 @@ c=s[0];
 c.n=0;
 aa=E("div");
 b.ac(aa);
-i=-1;
-while(++i<4)
-aa.sa("x"+i,c[i]),
-aa[i]=c[i];
+aa.u=function(){
+ var i=-1;
+ while(++i<4)
+ aa.sa("x"+i,c[i]),
+ aa[i]=c[i];
+};
+aa.textContent=1;
+aa.onclick=r;
+aa.u();
 
 a[0]=E("tr");
 a.ac(a[0]);
