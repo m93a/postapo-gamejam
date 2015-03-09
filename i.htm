@@ -93,7 +93,9 @@ p – which player's turn it is
 s – "stage" or "phase" of the game,
     0=init, 1=rise, 2=stall, 3=fall */
 
-e,f,
+e,
+
+f, //coords of ref. point
 
 g=window,
 h,i,j,k, //iterators
@@ -137,6 +139,9 @@ bt = Add a row to the bottom,
 rt = Add a column to the right,
 lt = Add a column to the bottom */
 
+ma = Math.abs,
+mn = Number
+
 E=(x)=>document.createElement(x),
 I=(x)=>document.getElementById(x);
 
@@ -150,12 +155,23 @@ o=function(e){
  var i=-1,x,y=0,
  t=e.target;
  
- if(d.m==1){
-  return;
- }
+ if(d.m==1)return;
+ 
  if(d.m==2){
+  if(f&&a[f.x][f.y].p.textContent&&ma(f.x-t.x)+ma(f.y-t.y)==1){
+   x=a[f.x][f.y].p;
+   y=x.className;
+   if(!y||y=="p"+d.p){
+    x.className="";
+    t.p.className="p"+d.p;
+    t.p.textContent=mn(t.p.textContent)+mn(x.textContent);
+    x.textContent="";
+   }
+   f=0;
+  }else f={x:t.x,y:t.y};
   return;
- }
+ }else f=0;
+ 
  if(d.m==3){
   return;
  }
@@ -241,7 +257,7 @@ rt=()=>rlt(1);
 lt=()=>rlt(0);
 
 t=function(){
- d.a++;d.a==2&&d.s++;
+ d.a++;d.a==4&&d.s++;
  
  d.m=d.m==0?1:0;
  
