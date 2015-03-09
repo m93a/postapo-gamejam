@@ -29,23 +29,50 @@ top:10px;right:10px;
 <br>
 <script>
 
-var a,
+var a, /* world object,
+Table element extended by { ...-1: trElem,
+0: trElem, 1: trElem... }, where trElem are
+<tr> elements extended by { ...-1: tdElem,
+0: tdElem, 1: tdElem... }, where tdElem are
+<td> elements extended by the corresponding
+item of the tile stack */
+
 b=document.body,
-c={n:0},
+
+c={n:0}, /* active tile,
+Random tile from the tile stack, extended
+by {n: int}, where int is the index of the tile */
+
 d,e,f, //glob. vars
 g=window,
-h,
-i,j,k, //iterators
+h,i,j,k, //iterators
 l=console.log.bind(console),
-m=(x)=>x*Math.random()|0,
-n=(a,i)=>a.splice(i,i)[0],
-o,p,q,r, //f.tions
-s=[], //stack
+m=(x)=>x*Math.random()|0, //random int from 0 to x
+n=(a,i)=>a.splice(i,i)[0], //pop i-th element from array a
+
+o,/* click listener,
+Listener for the click event of td elements */
+
+p,q,r, //f.tions
+
+s=[], /* tile stack,
+Contains objects with properties 0 to 3
+for tile sides top, right, bottom, left.
+Values of those are numbers 0 to 2
+corresponding to the three zone types */
+
 t,u,v,
 w=window,
 x,y,z, //temp. vars
 aa, //active tile
-btp, rlt, tp, rt, lt, bt,
+btp, rlt,
+
+tp, rt, lt, bt, /* extend the plane,
+tp = Add a row to the top,
+bt = Add a row to the bottom,
+rt = Add a column to the right,
+lt = Add a column to the bottom */
+
 E=(x)=>document.createElement(x);
 
 x=Element.prototype;
