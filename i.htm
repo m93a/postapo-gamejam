@@ -121,11 +121,11 @@ n=(a,i)=>a.splice(i,1)[0], //pop i-th element from array a
 o, /* click listener,
 Listener for the click event of td elements */
 
-p=(e)=>e.preventDefault()+r()&&false, //right-click listener
+p=e=>e.preventDefault()+r()&&false, //right-click listener
 
-q,
+q=(v)=>(a[v.x][v.y].childNodes[1].remove(),a[v.x][v.y].cn=""), //destroy a building
 
-r =()=>([c[0],c[1],c[2],c[3]]=[c[3],c[0],c[1],c[2]],aa.u()),
+r=()=>([c[0],c[1],c[2],c[3]]=[c[3],c[0],c[1],c[2]],aa.u()),
 /* rotate tile,
 Listener for the click event of the tile hinter,
 rotates the active tile */
@@ -198,9 +198,9 @@ o=function(e){
   if(d.b==0||t.cn||t.p.cn!="p"+d.p)return;
   x=(v,w)=>((t.cn="p"+d.p),(t.ac(T(v))),g.e.push({t:w,p:d.p,d:mr(7,12),x:t.x,y:t.y}));
   y=dd[d.p];
-  d.b==1&&t.ga("x")=="2"&&y.j>3?(y.j-=x("M",1),3):
-  d.b==2&&t.ga("x")=="1"&&y.j>1&&y.f>3?((y.j--),(y.f-=3),x("P",2)):
-  d.b==3&&t.ga("x")=="0"?(t.sa("x",1),y.j+=mr(3,5)):
+  d.b==1&&t.ga("x")=="2"&&y.j>2?(y.j-=x("M",1),3):
+  d.b==2&&t.ga("x")=="1"&&y.j>0&&y.f>2?((y.j--),(y.f-=3),x("P",2)):
+  d.b==3&&t.ga("x")=="0"?(t.sa("x",2),y.j+=mr(3,5)):
   console.log(d.b,t.ga("x"));
   return dd.u();
  }
@@ -286,16 +286,24 @@ rt=()=>rlt(1);
 lt=()=>rlt(0);
 
 t=function(){
+ var x,y,z,w=dd[d.p];
  d.a++;d.a==4&&d.s++;
  
  d.m=d.m==0?1:0;cc.u();
  
  if(d.m==1){
   c={};aa.u();
+  x=-1;y=e.length
+  while(++x<y)
+   z=e[x],
+   z.p==d.p&&(
+    --z.d<1?q(z):
+    z.t==1?w.j++:
+    z.t==2?w.f++:0
+   );
+  
   return;
  }
- 
- var x=dd[d.p];
  
  n(s,c.n);
  x=m(s.length);
