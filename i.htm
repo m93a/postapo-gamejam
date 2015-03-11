@@ -89,16 +89,18 @@ c={n:0}, /* active tile,
 Random tile from the tile stack, extended
 by {n: int}, where int is the index of the tile */
 
-d={a:0,b:0,m:0,p:1,s:0}, /* game data
+d={a:0,b:0,m:0,n:0,p:1,s:0}, /* game data
 a – step counter, no. of t() calls
 b – building mode 0=none,1=mine,2=plant,3=destroy
 m – mode 0=place tile, 1=wait, 2=move, 3=build
+n – number of people to move
 p – which player's turn it is
 s – "stage" or "phase" of the game,
     0=init, 1=rise, 2=stall, 3=fall */
 
 e=[], /* array of buildings
-contains objects {p,x,y}
+contains objects {t,p,x,y}
+t – type of building
 p – no. of player that owns it
 x,y – coordinates */
 
@@ -147,8 +149,9 @@ bt = Add a row to the bottom,
 rt = Add a column to the right,
 lt = Add a column to the bottom */
 
-ma = Math.abs,
-mn = Number
+ma=Math.abs,
+mr=(x,y)=>x+ ++y*Math.random()|0,
+mn=Number,
 
 E=(x)=>document.createElement(x),
 I=(x)=>document.getElementById(x);
@@ -169,27 +172,28 @@ o=function(e){
  if(d.m==1)return;
  
  if(d.m==2){
-  if(f&&ma(f.x-t.x)+ma(f.y-t.y)==1){
-   if(!a[f.x][f.y].p.tc)return f=0;
+  if(f&&t.ga("x")&&ma(f.x-t.x)+ma(f.y-t.y)==1){
    x=a[f.x][f.y].p;
-   y=x.cn;
-   z=t.p.cn;
+   if(!x.tc)return f=0;
+   y=x.cn;z=t.p.cn;
    if(y=="p"+d.p&&(!z||z=="p"+d.p)){
-    x.cn="";
     t.p.cn="p"+d.p;
-    t.p.tc=mn(t.p.tc)+mn(x.tc);
-    x.tc="";
+    t.p.tc=mn(t.p.tc)+d.n;
+    x.tc=mn(x.tc)-d.n||(x.cn="");
     cc.u(1);
    }
    f=0;
   }else t.p.tc&&t.p.cn=="p"+d.p&&(f={x:t.x,y:t.y});
-  return;
+  return mm.u();
  }else f=0;
  
  if(d.m==3){
   if(d.b==0)return;
-  
-  return;
+  d.b==1&&t.ga("x")=="2"?(0/*create junk mine*/):
+  d.b==2&&t.ga("x")=="1"?(0/*create plantation*/):
+  d.b==3&&t.ga("x")=="0"?(t.sa("x",1),dd[d.p].j+=mr(3,5)):
+  console.log(d.b,t.ga("x"));
+  return dd.u();
  }
  
  if(x=(a[t.x-1]||{})[t.y]){
@@ -342,7 +346,7 @@ cc.u=function(z){
  x.cn=y.cn="";
  d.m==2?(x.cn="active"):
  d.m==3?(y.cn="active"):0;
- mm.u();bb.u();
+ f=0;mm.u();bb.u();
 };
 
 bb=E("p");
@@ -366,20 +370,21 @@ mm=E("p");
 mm.innerHTML="<h3>Move</h3>How many:<input id=mi type=range "+
 "min=1 max=0><output id=mo></output>";
 col.ac(mm);
-mm.n=0;
-I("mi").onchange=mm.u;
+mm.mi=I("mi");
+mm.mo=I("mo");
 mm.u=function(){
- var x=I("mi"),y=I("mo"),z;
+ var x=mm.mi,y=mm.mo,z;
  mm.cn=d.m==2?"":"hidden";
  if(!f){
-  x.max=0;
+  x.max=d.n=0;
  }else{
   z=a[f.x][f.y].p;
-  z.cn=="p"+d.p?
-  
+  x.max=z.cn=="p"+d.p?mn(z.tc):0;
+  d.n=mn(x.value)||0;
  }
- y.tc=x.min<x.max?mm.n+" of "+x.max:"0 of 0";
+ y.tc=d.n+" of "+x.max;
 };
+mm.mi.onchange=mm.u;
 mm.u();
 
 dd=E("p");
@@ -421,6 +426,8 @@ e.keyCode==78?t()://n
 e.keyCode==74?bb.u(1)://j
 e.keyCode==75?bb.u(2)://k
 e.keyCode==76?bb.u(3)://l
+e.keyCode==107?((mm.mi.value=mn(mm.mi.value)+1),mm.u())://+
+e.keyCode==109?((mm.mi.value=mn(mm.mi.value)-1),mm.u())://-
 0;
 
 </script>
