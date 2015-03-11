@@ -89,14 +89,18 @@ c={n:0}, /* active tile,
 Random tile from the tile stack, extended
 by {n: int}, where int is the index of the tile */
 
-d={a:0, b:0, m:0, p:1,s:0}, /* game data
+d={a:0,b:0,m:0,p:1,s:0}, /* game data
 a – step counter, no. of t() calls
+b – building mode 0=none,1=mine,2=plant,3=destroy
 m – mode 0=place tile, 1=wait, 2=move, 3=build
 p – which player's turn it is
 s – "stage" or "phase" of the game,
     0=init, 1=rise, 2=stall, 3=fall */
 
-e,
+e=[], /* array of buildings
+contains objects {p,x,y}
+p – no. of player that owns it
+x,y – coordinates */
 
 f, //coords of ref. point
 
@@ -154,6 +158,9 @@ x.ac=x.appendChild;
 x.bc=function(x){return this.insertBefore(x,this.children[0])};
 x.sa=x.setAttribute;
 x.ga=x.getAttribute;
+y=(w,z)=>Object.defineProperty(x,w,{get:function(){return this[z]},set:function(x){this[z]=x}});
+y("cn","className");
+y("tc","textContent");
 
 o=function(e){
  var i=-1,x,y=0,
@@ -163,23 +170,25 @@ o=function(e){
  
  if(d.m==2){
   if(f&&ma(f.x-t.x)+ma(f.y-t.y)==1){
-   if(!a[f.x][f.y].p.textContent)return f=0;
+   if(!a[f.x][f.y].p.tc)return f=0;
    x=a[f.x][f.y].p;
-   y=x.className;
-   z=t.p.className;
+   y=x.cn;
+   z=t.p.cn;
    if(y=="p"+d.p&&(!z||z=="p"+d.p)){
-    x.className="";
-    t.p.className="p"+d.p;
-    t.p.textContent=mn(t.p.textContent)+mn(x.textContent);
-    x.textContent="";
+    x.cn="";
+    t.p.cn="p"+d.p;
+    t.p.tc=mn(t.p.tc)+mn(x.tc);
+    x.tc="";
     cc.u(1);
    }
    f=0;
-  }else t.p.textContent&&t.p.className=="p"+d.p&&(f={x:t.x,y:t.y});
+  }else t.p.tc&&t.p.cn=="p"+d.p&&(f={x:t.x,y:t.y});
   return;
  }else f=0;
  
  if(d.m==3){
+  if(d.b==0)return;
+  
   return;
  }
  
@@ -208,7 +217,7 @@ o=function(e){
  a[t.x][t.y-1]||lt();
  a[t.x][t.y+1]||rt();
  
- (d.s==0)&&(t.p.className="p"+d.p)&&(t.p.textContent=dd[d.p].p);
+ (d.s==0)&&(t.p.cn="p"+d.p)&&(t.p.tc=dd[d.p].p);
  
  g.t();
 };
@@ -285,7 +294,7 @@ t=function(){
  (x.f<0)&&((x.p+=x.f),x.f=0);
  (x.p<1)&&(alert("Player "+d.p+" lost"));
  d.p==1?d.p=2:d.p=1;
- aa.textContent=d.p;
+ aa.tc=d.p;
  dd.u();
  cc.u();
 };
@@ -316,7 +325,7 @@ aa.u=function(){
  aa[i]=c[i];
  aa.sa("x",c.z);
 };
-aa.textContent=1;
+aa.tc=1;
 aa.onclick=r;
 aa.u();
 
@@ -330,11 +339,48 @@ I("cb").onclick=()=>cc.u(3);
 cc.u=function(z){
  var x=I("cm"),y=I("cb");
  if(z&&d.m!=0)d.m=z;
- x.className=y.className="";
- d.m==2?(x.className="active"):
- d.m==3?(y.className="active"):0;
- bb.u();
+ x.cn=y.cn="";
+ d.m==2?(x.cn="active"):
+ d.m==3?(y.cn="active"):0;
+ mm.u();bb.u();
 };
+
+bb=E("p");
+bb.innerHTML="<h3>Build</h3><button id=bm>Junk Mines</button>"+
+"<button id=bp>Plantation</button><button id=bd>Demolish</button>";
+col.ac(bb);
+I("bm").onclick=()=>bb.u(1);
+I("bp").onclick=()=>bb.u(2);
+I("bd").onclick=()=>bb.u(3);
+bb.u=function(w){
+ var x=I("bm"),y=I("bp"),z=I("bd");
+ bb.cn=d.m==3?w&&((d.b=w),""):((d.b=0),"hidden");
+ x.cn=y.cn=z.cn="";
+ d.b==1?(x.cn="active"):
+ d.b==2?(y.cn="active"):
+ d.b==3?(z.cn="active"):0;
+};
+bb.u();
+
+mm=E("p");
+mm.innerHTML="<h3>Move</h3>How many:<input id=mi type=range "+
+"min=1 max=0><output id=mo></output>";
+col.ac(mm);
+mm.n=0;
+I("mi").onchange=mm.u;
+mm.u=function(){
+ var x=I("mi"),y=I("mo"),z;
+ mm.cn=d.m==2?"":"hidden";
+ if(!f){
+  x.max=0;
+ }else{
+  z=a[f.x][f.y].p;
+  z.cn=="p"+d.p?
+  
+ }
+ y.tc=x.min<x.max?mm.n+" of "+x.max:"0 of 0";
+};
+mm.u();
 
 dd=E("p");
 dd.innerHTML="<h3 class=p1>Player 1</h3>Population: <output id=p1></output><br>"+
@@ -354,27 +400,9 @@ x();
 dd.u=function(){
  var i=0,j,x=["p","f","j"],l=3;
  while(j=-1,++i<3)while(++j<l)
- dd[i][x[j]+"n"].textContent=dd[i][x[j]];
+ dd[i][x[j]+"n"].tc=dd[i][x[j]];
 };
 dd.u();
-
-bb=E("p");
-bb.innerHTML="<h3>Build</h3><button id=bm>Junk Mines</button>"+
-"<button id=bp>Plantation</button><button id=bd>Demolish</button>";
-col.ac(bb);
-I("bm").onclick=()=>bb.u(1);
-I("bp").onclick=()=>bb.u(2);
-I("bd").onclick=()=>bb.u(3);
-bb.u=function(w){
- var x=I("bm"),y=I("bp"),z=I("bd");
- bb.className=d.m==3?w&&((d.b=w),""):((d.b=0),"hidden");
- x.className=y.className=z.className="";
- d.b==1?(x.className="active"):
- d.b==2?(y.className="active"):
- d.b==3?(z.className="active"):0;
-};
-bb.u();
-
 
 
 a[0]=E("tr");
@@ -390,6 +418,9 @@ b.onkeydown=e=>
 e.keyCode==66?cc.u(3)://b
 e.keyCode==77?cc.u(2)://m
 e.keyCode==78?t()://n
+e.keyCode==74?bb.u(1)://j
+e.keyCode==75?bb.u(2)://k
+e.keyCode==76?bb.u(3)://l
 0;
 
 </script>
