@@ -48,6 +48,9 @@ h3{
 margin:0;
 }
 
+.active{outline:1px solid yellow;}
+.hidden{display:none;}
+
 .p1{color:blue;}
 .p2{color:green;}
 
@@ -86,7 +89,7 @@ c={n:0}, /* active tile,
 Random tile from the tile stack, extended
 by {n: int}, where int is the index of the tile */
 
-d={a:0, m:0, p:1,s:0}, /* game data
+d={a:0, b:0, m:0, p:1,s:0}, /* game data
 a – step counter, no. of t() calls
 m – mode 0=place tile, 1=wait, 2=move, 3=build
 p – which player's turn it is
@@ -129,6 +132,7 @@ v,w,
 x,y,z, //temp. vars
 col, //left&right column
 aa, //active tile
+bb, //buildings panel
 cc, //controls panel
 dd, //visible data
 
@@ -168,6 +172,7 @@ o=function(e){
     t.p.className="p"+d.p;
     t.p.textContent=mn(t.p.textContent)+mn(x.textContent);
     x.textContent="";
+    cc.u(1);
    }
    f=0;
   }else t.p.textContent&&t.p.className=="p"+d.p&&(f={x:t.x,y:t.y});
@@ -261,7 +266,7 @@ lt=()=>rlt(0);
 t=function(){
  d.a++;d.a==4&&d.s++;
  
- d.m=d.m==0?1:0;
+ d.m=d.m==0?1:0;cc.u();
  
  if(d.m==1){
   c={};aa.u();
@@ -282,6 +287,7 @@ t=function(){
  d.p==1?d.p=2:d.p=1;
  aa.textContent=d.p;
  dd.u();
+ cc.u();
 };
 
 
@@ -315,12 +321,20 @@ aa.onclick=r;
 aa.u();
 
 cc=E("p");
-cc.innerHTML="<button id=bb>Build</button><button id=bm>Move"+
-"</button><button id=be>End turn</button>";
+cc.innerHTML="<button id=cb>Build</button><button id=cm>Move"+
+"</button><button id=ce>End turn</button>";
 col.ac(cc);
-I("be").onclick=t;
-I("bm").onclick=()=>d.m=2;
-I("bb").onclick=()=>d.m=3;
+I("ce").onclick=t;
+I("cm").onclick=()=>cc.u(2);
+I("cb").onclick=()=>cc.u(3);
+cc.u=function(z){
+ var x=I("cm"),y=I("cb");
+ if(z&&d.m!=0)d.m=z;
+ x.className=y.className="";
+ d.m==2?(x.className="active"):
+ d.m==3?(y.className="active"):0;
+ bb.u();
+};
 
 dd=E("p");
 dd.innerHTML="<h3 class=p1>Player 1</h3>Population: <output id=p1></output><br>"+
@@ -344,6 +358,24 @@ dd.u=function(){
 };
 dd.u();
 
+bb=E("p");
+bb.innerHTML="<h3>Build</h3><button id=bm>Junk Mines</button>"+
+"<button id=bp>Plantation</button><button id=bd>Demolish</button>";
+col.ac(bb);
+I("bm").onclick=()=>bb.u(1);
+I("bp").onclick=()=>bb.u(2);
+I("bd").onclick=()=>bb.u(3);
+bb.u=function(w){
+ var x=I("bm"),y=I("bp"),z=I("bd");
+ bb.className=d.m==3?w&&((d.b=w),""):((d.b=0),"hidden");
+ x.className=y.className=z.className="";
+ d.b==1?(x.className="active"):
+ d.b==2?(y.className="active"):
+ d.b==3?(z.className="active"):0;
+};
+bb.u();
+
+
 
 a[0]=E("tr");
 a.ac(a[0]);
@@ -353,5 +385,11 @@ a[0].ac(x);
 x.onclick=o;
 x.prim=1;
 x.ac(x.p=E("span"));
+
+b.onkeydown=e=>
+e.keyCode==66?cc.u(3)://b
+e.keyCode==77?cc.u(2)://m
+e.keyCode==78?t()://n
+0;
 
 </script>
